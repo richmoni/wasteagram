@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
 
+import 'package:wasteagram/screens/detail_screen.dart';
+
 class ListScreen extends StatefulWidget {
   ListScreen({Key? key, required this.title}) : super(key: key);
 
@@ -48,6 +50,13 @@ class _ListScreenState extends State<ListScreen> {
                           .format(post['date'].toDate())),
                       trailing: Text(post['quantity'].toString(),
                           style: Theme.of(context).textTheme.headline4),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailScreen(post: post)),
+                        );
+                      },
                     ),
                   );
                 }).toList(),
