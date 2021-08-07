@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+// import 'package:location/location.dart';
 
 import 'package:wasteagram/models/food_waste_post.dart';
 import 'package:wasteagram/screens/detail_screen.dart';
+import 'package:wasteagram/screens/new_post_screen.dart';
 
 class ListScreen extends StatefulWidget {
   ListScreen({Key? key, required this.title}) : super(key: key);
@@ -16,12 +22,19 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
-  int _counter = 0;
+  final picker = ImagePicker();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    Reference ref =
+        FirebaseStorage.instance.ref().child(DateTime.now().toString());
+    UploadTask uploadTask = ref.putFile(File(pickedFile!.path));
+    String url = await (await uploadTask).ref.getDownloadURL();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewPostScreen(url: url)),
+    );
+    setState(() {});
   }
 
   @override
@@ -73,7 +86,7 @@ class _ListScreenState extends State<ListScreen> {
             }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: getImage,
         tooltip: 'Create a New Post',
         child: Icon(Icons.camera_alt),
       ),
