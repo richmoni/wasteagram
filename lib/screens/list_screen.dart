@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:intl/intl.dart';
 
+import 'package:wasteagram/models/food_waste_post.dart';
 import 'package:wasteagram/screens/detail_screen.dart';
 
 class ListScreen extends StatefulWidget {
@@ -26,8 +26,9 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Create a CollectionReference called posts that references the firestore collection
-    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    // Create a CollectionReference called rawPosts that references the firestore collection
+    CollectionReference rawPosts =
+        FirebaseFirestore.instance.collection('posts');
 
     return Scaffold(
       appBar: AppBar(
@@ -36,19 +37,27 @@ class _ListScreenState extends State<ListScreen> {
       ),
       body: Center(
         child: StreamBuilder(
-            stream: posts.snapshots(),
+            stream: rawPosts.snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
               }
+              final List<FoodWastePost> _posts =
+                  snapshot.data!.docs.map((post) {
+                return FoodWastePost(
+                    date: post['date'].toDate(),
+                    imageURL: post['imageURL'],
+                    quantity: post['quantity'],
+                    latitude: post['latitude'],
+                    longitude: post['longitude']);
+              }).toList();
               return ListView(
-                children: snapshot.data!.docs.map((post) {
+                children: _posts.map((post) {
                   return Center(
                     child: ListTile(
-                      title: Text(DateFormat('EEEE, MMMM d, yyyy')
-                          .format(post['date'].toDate())),
-                      trailing: Text(post['quantity'].toString(),
+                      title: Text(post.formattedDate),
+                      trailing: Text(post.quantity.toString(),
                           style: Theme.of(context).textTheme.headline4),
                       onTap: () {
                         Navigator.push(

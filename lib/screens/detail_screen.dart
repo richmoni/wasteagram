@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:intl/intl.dart';
+import 'package:wasteagram/models/food_waste_post.dart';
 
 class DetailScreen extends StatelessWidget {
   const DetailScreen({Key? key, required this.post}) : super(key: key);
 
-  final post;
+  final FoodWastePost post;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class DetailScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              Text(DateFormat('E, MMM d, yyyy').format(post['date'].toDate()),
+              Text(post.abbreviatedDate,
                   style: Theme.of(context).textTheme.headline4),
               Spacer(),
               Container(
@@ -32,17 +32,17 @@ class DetailScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(post['imageURL']),
+                    image: NetworkImage(post.imageURL),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
               Spacer(),
-              Text('${post['quantity'].toString()} items',
+              Text('${post.quantity.toString()} items',
                   style: Theme.of(context).textTheme.headline4),
               Spacer(),
               Text(
-                  'Location: (${post['latitude'].toString()}, ${post['longitude'].toString()})'),
+                  'Location: (${post.formattedLatitude}, ${post.formattedLongitude})'),
             ],
           ),
         ),
