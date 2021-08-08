@@ -1,12 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:location/location.dart';
 
 import 'package:wasteagram/models/food_waste_post.dart';
 import 'package:wasteagram/screens/detail_screen.dart';
@@ -26,13 +21,10 @@ class _ListScreenState extends State<ListScreen> {
 
   void getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    Reference ref =
-        FirebaseStorage.instance.ref().child(DateTime.now().toString());
-    UploadTask uploadTask = ref.putFile(File(pickedFile!.path));
-    String url = await (await uploadTask).ref.getDownloadURL();
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewPostScreen(url: url)),
+      MaterialPageRoute(
+          builder: (context) => NewPostScreen(pickedFile: pickedFile)),
     );
     setState(() {});
   }
