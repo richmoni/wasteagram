@@ -46,7 +46,7 @@ class _ListScreenState extends State<ListScreen> {
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && snapshot.data!.size > 0) {
                   final List<FoodWastePost> _posts =
                       snapshot.data!.docs.map((post) {
                     return FoodWastePost(
@@ -79,20 +79,13 @@ class _ListScreenState extends State<ListScreen> {
                       );
                     }).toList(),
                   );
-                } else {
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                      ]);
                 }
-              } else {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                    ]);
               }
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ]);
             }),
       ),
       floatingActionButton: Semantics(
