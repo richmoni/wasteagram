@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:wasteagram/src/models/food_waste_post.dart';
 
-import 'package:wasteagram/models/food_waste_post.dart';
-
+/// The detail screen for a [FoodWastePost].
 class DetailScreen extends StatelessWidget {
   const DetailScreen({Key? key, required this.post}) : super(key: key);
 
+  /// The food waste post to display.
   final FoodWastePost post;
 
   @override
@@ -49,7 +50,7 @@ class DetailScreen extends StatelessWidget {
                   ),
                 ),
                 image: true,
-                label: 'Image of wasted food items',
+                label: 'Image of discarded food items',
               ),
               Spacer(),
               Semantics(
@@ -57,7 +58,7 @@ class DetailScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4),
                 textField: true,
                 readOnly: true,
-                label: 'Number of wasted food items',
+                label: 'The number of discarded items',
               ),
               Spacer(),
               Semantics(

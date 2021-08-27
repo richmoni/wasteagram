@@ -1,14 +1,15 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 
+/// The screen for creating a new food waste post.
 class NewPostScreen extends StatefulWidget {
-  final pickedFile;
+  /// The image picked from the user's image library.
+  final XFile? pickedFile;
 
   const NewPostScreen({Key? key, required this.pickedFile}) : super(key: key);
 
@@ -16,9 +17,10 @@ class NewPostScreen extends StatefulWidget {
   NewPostScreenState createState() => NewPostScreenState();
 }
 
+/// The state of the screen for creating a new food waste post.
 class NewPostScreenState extends State<NewPostScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String? url;
   int quantity = 0;
   late LocationData locationData;
@@ -26,11 +28,12 @@ class NewPostScreenState extends State<NewPostScreen> {
   @override
   void initState() {
     super.initState();
-    retrieveUrl();
-    retrieveLocation();
+    uploadImage();
+    locateUser();
   }
 
-  void retrieveUrl() async {
+  /// Upload the image to Firebase storage and save its URL.
+  void uploadImage() async {
     Reference ref =
         FirebaseStorage.instance.ref().child(DateTime.now().toString());
     UploadTask uploadTask = ref.putFile(File(widget.pickedFile!.path));
@@ -38,8 +41,9 @@ class NewPostScreenState extends State<NewPostScreen> {
     setState(() {});
   }
 
-  void retrieveLocation() async {
-    var locationService = Location();
+  /// Get the user's location.
+  void locateUser() async {
+    Location locationService = Location();
     locationData = await locationService.getLocation();
     setState(() {});
   }

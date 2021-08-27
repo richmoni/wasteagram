@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wasteagram/src/models/food_waste_post.dart';
+import 'package:wasteagram/src/screens/detail_screen.dart';
+import 'package:wasteagram/src/screens/new_post_screen.dart';
 
-import 'package:wasteagram/models/food_waste_post.dart';
-import 'package:wasteagram/screens/detail_screen.dart';
-import 'package:wasteagram/screens/new_post_screen.dart';
-
+/// A list view of all food waste posts.
 class ListScreen extends StatefulWidget {
   ListScreen({Key? key, required this.title}) : super(key: key);
 
+  /// The [AppBar] title.
   final String title;
 
   @override
@@ -17,10 +17,13 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
-  final picker = ImagePicker();
+  /// Image picker instance for picking images from the image library.
+  final ImagePicker picker = ImagePicker();
 
+  /// Pick an image from the image library.
   void getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -31,7 +34,7 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Create a CollectionReference called rawPosts that references the firestore collection
+    // Create a CollectionReference that references the firestore collection.
     CollectionReference rawPosts =
         FirebaseFirestore.instance.collection('posts');
 
