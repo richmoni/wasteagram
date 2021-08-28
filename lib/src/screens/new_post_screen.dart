@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:wasteagram/src/widgets/custom_app_bar.dart';
 
 /// The screen for creating a new food waste post.
 class NewPostScreen extends StatefulWidget {
@@ -21,9 +22,10 @@ class NewPostScreen extends StatefulWidget {
 class NewPostScreenState extends State<NewPostScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String? url;
-  int quantity = 0;
-  late LocationData locationData;
+  static const String _title = 'New Post';
+  String? _url;
+  int _quantity = 0;
+  late LocationData _locationData;
 
   @override
   void initState() {
@@ -37,36 +39,23 @@ class NewPostScreenState extends State<NewPostScreen> {
     Reference ref =
         FirebaseStorage.instance.ref().child(DateTime.now().toString());
     UploadTask uploadTask = ref.putFile(File(widget.pickedFile!.path));
-    url = await (await uploadTask).ref.getDownloadURL();
+    _url = await (await uploadTask).ref.getDownloadURL();
     setState(() {});
   }
 
   /// Get the user's location.
   void locateUser() async {
     Location locationService = Location();
-    locationData = await locationService.getLocation();
+    _locationData = await locationService.getLocation();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (url == null) {
+    if (_url == null) {
       return Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text('New Post'),
-          centerTitle: true,
-          leading: Semantics(
-            child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            button: true,
-            enabled: true,
-            label: 'Tap to return to list screen',
-          ),
-        ),
+        appBar: CustomAppBar(title: _title, backButton: true),
         body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -75,20 +64,7 @@ class NewPostScreenState extends State<NewPostScreen> {
     } else {
       return Scaffold(
         key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text('New Post'),
-          centerTitle: true,
-          leading: Semantics(
-            child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            button: true,
-            enabled: true,
-            label: 'Tap to return to list screen',
-          ),
-        ),
+        appBar: CustomAppBar(title: _title, backButton: true),
         body: Form(
           key: _formKey,
           child: Column(
@@ -99,7 +75,7 @@ class NewPostScreenState extends State<NewPostScreen> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(url!),
+                      image: NetworkImage(_url!),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -121,7 +97,7 @@ class NewPostScreenState extends State<NewPostScreen> {
                     textAlign: TextAlign.center,
                     onSaved: (value) {
                       if (value != null) {
-                        quantity = int.parse(value);
+                        _quantity = int.parse(value);
                       }
                     },
                     validator: (value) {
@@ -147,10 +123,10 @@ class NewPostScreenState extends State<NewPostScreen> {
                         _formKey.currentState!.save();
                         FirebaseFirestore.instance.collection('posts').add({
                           'date': DateTime.now(),
-                          'imageURL': '${url!}',
-                          'quantity': quantity,
-                          'latitude': locationData.latitude,
-                          'longitude': locationData.longitude
+                          'imageURL': '${_url!}',
+                          'quantity': _quantity,
+                          'latitude': _locationData.latitude,
+                          'longitude': _locationData.longitude
                         });
                         Navigator.of(context).pop();
                       }

@@ -4,13 +4,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:wasteagram/src/models/food_waste_post.dart';
 import 'package:wasteagram/src/screens/detail_screen.dart';
 import 'package:wasteagram/src/screens/new_post_screen.dart';
+import 'package:wasteagram/src/widgets/custom_app_bar.dart';
 
 /// A list view of all food waste posts.
 class ListScreen extends StatefulWidget {
-  ListScreen({Key? key, required this.title}) : super(key: key);
-
-  /// The [AppBar] title.
+  /// The title of the app bar.
   final String title;
+
+  ListScreen({Key? key, required this.title}) : super(key: key);
 
   @override
   _ListScreenState createState() => _ListScreenState();
@@ -39,10 +40,7 @@ class _ListScreenState extends State<ListScreen> {
         FirebaseFirestore.instance.collection('posts');
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(title: widget.title),
       body: Center(
         child: StreamBuilder(
             stream: rawPosts.snapshots(),
@@ -71,8 +69,8 @@ class _ListScreenState extends State<ListScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailScreen(post: post)),
+                                    builder: (context) => DetailScreen(
+                                        title: widget.title, post: post)),
                               );
                             },
                           ),

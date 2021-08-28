@@ -3,7 +3,7 @@ import 'package:wasteagram/src/screens/list_screen.dart';
 
 /// The top-level application class.
 class App extends StatelessWidget {
-  /// The title of the application and list screen [AppBar].
+  /// The title of the application and list screen app bar.
   static const String _title = 'Wasteagram';
 
   @override

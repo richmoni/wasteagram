@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:wasteagram/src/models/food_waste_post.dart';
+import 'package:wasteagram/src/widgets/custom_app_bar.dart';
 
-/// The detail screen for a [FoodWastePost].
+/// The detail screen for a food waste post.
 class DetailScreen extends StatelessWidget {
-  const DetailScreen({Key? key, required this.post}) : super(key: key);
+  /// The title of the app bar.
+  final String title;
 
   /// The food waste post to display.
   final FoodWastePost post;
 
+  const DetailScreen({Key? key, required this.post, required this.title})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Wasteagram'),
-        centerTitle: true,
-        leading: Semantics(
-          child: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-          button: true,
-          enabled: true,
-          label: 'Tap to return to list screen',
-        ),
-      ),
+      appBar: CustomAppBar(title: title, backButton: true),
       body: Padding(
         padding: EdgeInsets.fromLTRB(0, 50, 0, 50),
         child: Center(
