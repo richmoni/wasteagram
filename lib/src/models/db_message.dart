@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
-/// A food waste post.
-class FoodWastePost {
+/// Represents a food waste post in the Firestore database.
+class DbMessage {
   /// The submission datetime.
   final DateTime date;
 
@@ -17,7 +17,7 @@ class FoodWastePost {
   /// The longitude from which the post was submitted.
   final double longitude;
 
-  FoodWastePost(
+  const DbMessage(
       {required this.date,
       required this.imageURL,
       required this.quantity,

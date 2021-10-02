@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:wasteagram/src/widgets/custom_app_bar.dart';
 
-/// The screen for creating a new food waste post.
+/// The interface for creating a new food waste post.
 class NewPostScreen extends StatefulWidget {
   /// The image picked from the user's image library.
   final XFile? pickedFile;
@@ -18,14 +18,12 @@ class NewPostScreen extends StatefulWidget {
   NewPostScreenState createState() => NewPostScreenState();
 }
 
-/// The state of the screen for creating a new food waste post.
 class NewPostScreenState extends State<NewPostScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const String _title = 'New Post';
-  String? _url;
-  int _quantity = 0;
   late LocationData _locationData;
+  String? _imageURL;
+  int _quantity = 0;
 
   @override
   void initState() {
@@ -36,10 +34,11 @@ class NewPostScreenState extends State<NewPostScreen> {
 
   /// Upload the image to Firebase storage and save its URL.
   void uploadImage() async {
-    Reference ref =
-        FirebaseStorage.instance.ref().child(DateTime.now().toString());
+    // Obtain a reference to the Firebase Storage bucket and upload the image.
+    Reference ref = FirebaseStorage.instance.ref().child(DateTime.now().toString());
     UploadTask uploadTask = ref.putFile(File(widget.pickedFile!.path));
-    _url = await (await uploadTask).ref.getDownloadURL();
+    _imageURL = await (await uploadTask).ref.getDownloadURL();
+    // Trigger rebuild after image has been uploaded.
     setState(() {});
   }
 
@@ -47,14 +46,15 @@ class NewPostScreenState extends State<NewPostScreen> {
   void locateUser() async {
     Location locationService = Location();
     _locationData = await locationService.getLocation();
+    // Trigger rebuild after location has been found.
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_url == null) {
+    // Display progress indicator until image has been uploaded.
+    if (_imageURL == null) {
       return Scaffold(
-        key: _scaffoldKey,
         appBar: CustomAppBar(title: _title, backButton: true),
         body: Center(
             child: Column(
@@ -63,7 +63,6 @@ class NewPostScreenState extends State<NewPostScreen> {
       );
     } else {
       return Scaffold(
-        key: _scaffoldKey,
         appBar: CustomAppBar(title: _title, backButton: true),
         body: Form(
           key: _formKey,
@@ -71,26 +70,25 @@ class NewPostScreenState extends State<NewPostScreen> {
             children: [
               Semantics(
                 child: Container(
-                  height: 300,
+                  height: 300.0,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(_url!),
+                      image: NetworkImage(_imageURL!),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 image: true,
-                label: 'Image of wasted food items',
+                label: 'Image of discarded food items',
               ),
               Spacer(),
               SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
+                width: MediaQuery.of(context).size.width - 40.0,
                 height: 100.0,
                 child: Semantics(
                   child: TextFormField(
-                    decoration:
-                        InputDecoration(labelText: 'Number of Wasted Items'),
+                    decoration: InputDecoration(labelText: 'Number of Discarded Items'),
                     keyboardType: TextInputType.number,
                     autofocus: true,
                     style: TextStyle(fontSize: 34),
@@ -102,14 +100,14 @@ class NewPostScreenState extends State<NewPostScreen> {
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the number of wasted items';
+                        return 'Please enter the number of discarded items';
                       }
                       return null;
                     },
                   ),
                   textField: true,
                   focusable: true,
-                  label: 'Text field for entering the number of wasted items',
+                  label: 'Text field for entering the number of discarded items',
                 ),
               ),
               Spacer(flex: 4),
@@ -120,18 +118,20 @@ class NewPostScreenState extends State<NewPostScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        // Save the form fields and insert the new post into the Firestore database.
                         _formKey.currentState!.save();
                         FirebaseFirestore.instance.collection('posts').add({
                           'date': DateTime.now(),
-                          'imageURL': '${_url!}',
+                          'imageURL': '${_imageURL!}',
                           'quantity': _quantity,
                           'latitude': _locationData.latitude,
                           'longitude': _locationData.longitude
                         });
+                        // Return to the list screen.
                         Navigator.of(context).pop();
                       }
                     },
-                    child: Icon(Icons.cloud_upload, size: 80),
+                    child: Icon(Icons.cloud_upload, size: 80.0),
                   ),
                   button: true,
                   enabled: true,
